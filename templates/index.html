@@ -1,35 +1,48 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <title>Conversor Excel → SQL</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Conversor Excel para Script SQL</h1>
 
-    <form id="uploadForm">
-        <input type="file" name="excelFile" accept=".xls,.xlsx" required>
-        <button type="submit">Enviar</button>
-    </form>
+    <header>
+        <h1>Conversor Excel para SQL</h1>
+        <button class="theme-toggle">Alternar Tema</button>
+    </header>
 
-    <div id="sheetSelect" style="display:none;">
-        <label for="sheets">Escolha a aba:</label>
-        <select id="sheets"></select>
-        <button id="loadColumns">Carregar Colunas</button>
-    </div>
+    <main class="container">
 
-    <div id="columnsArea" style="display:none;">
-        <h3>Colunas disponíveis:</h3>
-        <ul id="columns"></ul>
+        <form id="uploadForm" class="upload-area">
+            <input type="file" name="excelFile" accept=".xls,.xlsx" required>
+            <button type="submit">Enviar</button>
+        </form>
 
-        <textarea id="template" rows="6" cols="80" placeholder="Digite seu comando SQL usando {colunas}..."></textarea><br>
-        <input type="text" id="output_name" placeholder="Nome do arquivo de saída (ex: saida.sql)"><br>
-        <button id="generate">Gerar SQL</button>
-    </div>
+        <div id="sheetSelect" class="sheet-select" style="display:none;">
+            <label for="sheets">Escolha a aba:</label>
+            <select id="sheets"></select>
+            <button id="loadColumns">Carregar Colunas</button>
+        </div>
 
-    <div id="downloadLink" style="display:none;">
-        <a id="link" href="#">Download SQL</a>
-    </div>
+        <div id="columnsArea" style="display:none;">
+            <h3>Colunas disponíveis:</h3>
+            <ul id="columns"></ul>
+
+            <textarea id="template" rows="6" cols="80" placeholder="Digite seu comando SQL usando {colunas}..."></textarea><br>
+            <input type="text" id="output_name" placeholder="Nome do arquivo de saída (ex: saida.sql)"><br>
+            <button id="generate">Gerar SQL</button>
+        </div>
+
+        <div id="downloadLink" style="display:none;">
+            <a id="link" class="btn" href="#">Download SQL</a>
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        &copy; 2025 Conversor Excel → SQL | Desenvolvido por LipeRllk.
+    </footer>
 
     <script>
         let uploadedFilename = "";
@@ -95,6 +108,14 @@
             link.textContent = "Baixar SQL Gerado";
             document.getElementById('downloadLink').style.display = 'block';
         };
+
+        // Alternância de tema
+        document.querySelector('.theme-toggle').addEventListener('click', () => {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+        });
     </script>
+
 </body>
 </html>
