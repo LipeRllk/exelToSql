@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversor Excel → SQL</title>
+</head>
+<body>
+    <h1>Conversor Excel para Script SQL</h1>
+
+    <form id="uploadForm">
+        <input type="file" name="excelFile" accept=".xls,.xlsx" required>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <div id="sheetSelect" style="display:none;">
+        <label for="sheets">Escolha a aba:</label>
+        <select id="sheets"></select>
+        <button id="loadColumns">Carregar Colunas</button>
+    </div>
+
+    <div id="columnsArea" style="display:none;">
+        <h3>Colunas disponíveis:</h3>
+        <ul id="columns"></ul>
+
+        <textarea id="template" rows="6" cols="80" placeholder="Digite seu comando SQL usando {colunas}..."></textarea><br>
+        <input type="text" id="output_name" placeholder="Nome do arquivo de saída (ex: saida.sql)"><br>
+        <button id="generate">Gerar SQL</button>
+    </div>
+
+    <div id="downloadLink" style="display:none;">
+        <a id="link" href="#">Download SQL</a>
+    </div>
+
+    <script>
+        let uploadedFilename = "";
+
+        document.getElementById('uploadForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            uploadedFilename = result.filename;
+
+            const select = document.getElementById('sheets');
+            select.innerHTML = "";
+            result.sheets.forEach(sheet => {
+                const option = document.createElement('option');
+                option.value = sheet;
+                option.textContent = sheet;
+                select.appendChild(option);
+            });
+            document.getElementById('sheetSelect').style.display = 'block';
+        };
+
+        document.getElementById('loadColumns').onclick = async function () {
+            const sheet = document.getElementById('sheets').value;
+            const response = await fetch('/columns', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: uploadedFilename, sheet })
+            });
+            const result = await response.json();
+            const ul = document.getElementById('columns');
+            ul.innerHTML = "";
+            result.columns.forEach(col => {
+                const li = document.createElement('li');
+                li.textContent = `{${col}}`;
+                ul.appendChild(li);
+            });
+            document.getElementById('columnsArea').style.display = 'block';
+        };
+
+        document.getElementById('generate').onclick = async function () {
+            const sheet = document.getElementById('sheets').value;
+            const template = document.getElementById('template').value;
+            const outputName = document.getElementById('output_name').value;
+
+            const response = await fetch('/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    filename: uploadedFilename,
+                    sheet,
+                    template,
+                    output_name: outputName
+                })
+            });
+
+            const result = await response.json();
+            const link = document.getElementById('link');
+            link.href = result.download_url;
+            link.textContent = "Baixar SQL Gerado";
+            document.getElementById('downloadLink').style.display = 'block';
+        };
+    </script>
+</body>
+</html>
