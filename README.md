@@ -47,8 +47,8 @@ LICENSE                 ← Licença MIT
 
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/seuusuario/seuprojeto.git
-   cd seuprojeto
+   git clone https://github.com/LipeRllk/exelToSql
+   cd exelToSql
    ```
 
 2. Instale as dependências:
